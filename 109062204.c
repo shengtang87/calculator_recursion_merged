@@ -359,14 +359,6 @@ BTNode *factor(void)
     {
         retp = makeNode(ID, getLexeme());
         advance();
-        /*if (!match(ASSIGN)) {
-            retp = left;
-        } else {
-            retp = makeNode(ASSIGN, getLexeme());
-            advance();
-            retp->left = left;
-            retp->right = assign_expr();
-        }*/
     }
     else if (match(INCDEC))
     {
@@ -380,28 +372,7 @@ BTNode *factor(void)
         }
         else
             error(NOTNUMID);
-    } /*
-     else if (match(ADDSUB)) {
-         retp = makeNode(ADDSUB, getLexeme());
-         retp->left = makeNode(INT, "0");
-         advance();
-         if (match(INT)) {
-             retp->right = makeNode(INT, getLexeme());
-             advance();
-         } else if (match(ID)) {
-             retp->right = makeNode(ID, getLexeme());
-             advance();
-         } else if (match(LPAREN)) {
-             advance();
-             retp->right = assign_expr();
-             if (match(RPAREN))
-                 advance();
-             else
-                 error(MISPAREN);
-         } else {
-             error(NOTNUMID);
-         }
-     }*/
+    } 
     else if (match(LPAREN))
     {
         advance();
@@ -417,28 +388,6 @@ BTNode *factor(void)
     }
     return retp;
 }
-
-// term := factor term_tail
-/*BTNode *term(void) {
-    BTNode *node = factor();
-    return term_tail(node);
-}*/
-
-// term_tail := MULDIV factor term_tail | NiL
-/*BTNode *term_tail(BTNode *left) {
-    BTNode *node = NULL;
-
-    if (match(MULDIV)) {
-        node = makeNode(MULDIV, getLexeme());
-        advance();
-        node->left = left;
-        node->right = factor();
-        return term_tail(node);
-    } else {
-        return left;
-    }
-}*/
-
 // expr_tail := ADDSUB term expr_tail | NiL
 BTNode *or_expr_tail(BTNode *left)
 {
@@ -600,7 +549,6 @@ void statement(void)
     }
     else if (match(END))
     {
-        // printf(">> ");
         advance();
     }
     else
@@ -609,10 +557,6 @@ void statement(void)
         if (match(END))
         {
             evaluateTree(retp);
-            // printf("%d\n", evaluateTree(retp));
-            // printf("Prefix traversal: ");
-            // printPrefix(retp);
-            // printf("\n");
             printAssembly(retp, 0);
             freeTree(retp);
             advance();
@@ -905,37 +849,9 @@ void printAssembly(BTNode *root, int side)
     }
 }
 
-/*============================================================================================
-main
-============================================================================================*/
-
-// This package is a calculator
-// It works like a Python interpretor
-// Example:
-// >> y = 2
-// >> z = 2
-// >> x = 3 * y + 4 / (2 * z)
-// It will print the answer of every line
-// You should turn it into an expression compiler
-// And print the assembly code according to the input
-
-// This is the grammar used in this package
-// You can modify it according to the spec and the slide
-// statement  :=  ENDFILE | END | expr END
-// expr    	  :=  term expr_tail
-// expr_tail  :=  ADDSUB term expr_tail | NiL
-// term 	  :=  factor term_tail
-// term_tail  :=  MULDIV factor term_tail| NiL
-// factor	  :=  INT | ADDSUB INT |
-//		   	      ID  | ADDSUB ID  |
-//		   	      ID ASSIGN expr |
-//		   	      LPAREN expr RPAREN |
-//		   	      ADDSUB LPAREN expr RPAREN
-
 int main()
 {
     initTable();
-    // printf(">> ");
     while (1)
     {
         statement();
